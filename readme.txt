@@ -14,7 +14,8 @@ Utility Commands
 \! cls
 mysqldump -u root -p --databases library_db > C:\try-today\backups\08182026_library_db.sql 
 
-mysqldump -u root -p --databases library_db > C:\try-today\backups\%date:~-4%_%date:~4,2%_%date:~7,2%_%time:~0,2%_%time:~3,2%_%time:~6,2%_library_db.sql"
+set d=%date:~-4%-%date:~3,2%-%date:~0,2%&set t=%time:~0,2%-%time:~3,2%-%time:~6,2%&set t=%t: =0%&C:\xampp\mysql\bin\mysqldump.exe -u root -p --databases library_db > "C:\try-today\backups\%d%_%t%_library_db.sql"
+
 
 Laboratory 2
 
