@@ -221,6 +221,34 @@ if ($section === 'books' && $action === 'update') {
     }
 }
 
+//Fetch Borrow Records
+if ($section === 'borrow') {
+
+    //Fetch Students for borrow form
+    $stmt = $pdo->query("
+        SELECT 
+        student_id,
+        student_first_name,
+        student_last_name
+
+        FROM students
+        ORDER BY student_last_name, student_first_name
+    ");
+    $students = $stmt->fetchAll();
+    //Fetch Books for borrow form
+
+    $stmt=$pdo->query("
+        SELECT 
+        book_id,
+        book_title,
+        book_author
+
+        FROM books
+        ORDER BY book_title
+    ");
+
+    $books = $stmt->fetchAll();
+}
 ?>
 
 <!DOCTYPE html>
@@ -258,6 +286,7 @@ if ($section === 'books' && $action === 'update') {
                             required
                     />
                 </p>
+
                 <p>
                     <label>Last Name</label>
                     <br>
@@ -499,11 +528,74 @@ if ($section === 'books' && $action === 'update') {
     <?php endif; ?>
     
     <?php if ($section == 'borrow'): ?>
-        <h1>Borrow</h1>
+
+    <h1>Borrow</h1>
+
+    <p>
+        <a href="index.php?section=borrow&action=create">
+            Borrow a Book
+        </a>
+    </p>
+
+    <?php if ($action === 'create'): ?>
+
+        <h3>Borrow a Book</h3>
+
+        <form method="POST">
+
+            <p>
+                <label>Student:</label>
+                <br>
+
+                <select name="student_id" required>
+                    <option value="">-- Select Student --</option>
+
+                    <?php foreach ($students as $student): ?>
+                        <option value="<?= $student['student_id'] ?>">
+                            <?= htmlspecialchars(
+                                $student['student_first_name'] . ' ' . $student['student_last_name']
+                            ) ?>
+                        </option>
+                    <?php endforeach; ?>
+
+                </select>
+            </p>
+
+            <p>
+                <label>Book:</label>
+                <br>
+
+                <select name="book_id" required>
+                    <option value="">-- Select Book --</option>
+
+                    <?php foreach ($books as $book): ?>
+                        <option value="<?= $book['book_id'] ?>">
+                            <?= htmlspecialchars(
+                                $book['book_title'] . ' by ' . $book['book_author']
+                            ) ?>
+                        </option>
+                    <?php endforeach; ?>
+
+                </select>
+            </p>
+
+            <button type="submit">
+                Borrow
+            </button>
+
+            <a href="index.php?section=borrow">
+                Cancel
+            </a>
+
+        </form>
+
     <?php endif; ?>
 
-</body>
+<?php endif; ?>
+
+
 <?php if (isset($_SESSION['alert'])): ?>
+
     <script>
         alert(<?= json_encode($_SESSION['alert']) ?>);
     </script>
@@ -512,4 +604,6 @@ if ($section === 'books' && $action === 'update') {
 
 <?php endif; ?>
 
+</body>
 </html>
+
