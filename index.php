@@ -249,6 +249,68 @@ if ($section === 'borrow') {
 
     $books = $stmt->fetchAll();
 }
+// Borrow a Book
+
+ if($_SERVER['REQUEST_METHOD'] === 'POST'){
+        
+        $studentId = (int)($_POST['student_id'] ?? 0);
+        $bookId = (int)($_POST['book_id'] ?? 0);
+
+        if($studentId > 0 && $bookId > 0){
+            
+            // Check if student has an unreturned book
+            $stmt = $pdo->prepare("
+                SELECT borrow_id
+                FROM borrow
+                WHERE student_id=?
+                  AND borrow_return_date IS NULL
+                LIMIT 1
+            ");
+
+            $stmt->execute([$studentId]);
+            $studentBorrow = $stmt->fetch();
+
+            if($studentBorrow){
+                $_SESSION['alert'] = 'This student cannot borrow another book because a previous book has not been returned';
+            } else {
+                
+                // Check if book is already returned
+                $stmt = $pdo->prepare("
+                    SELECT borrow_id
+                    FROM borrow
+                    WHERE book_id=?
+                      AND borrow_return_date IS NULL
+                    LIMIT 1
+                ");
+
+                $stmt->execute([$bookId]);
+                $bookBorrow = $stmt->fetch();
+
+                if($bookBorrow){
+                    $_SESSION['alert'] = 'This book cannot be borrowed because it has not been returned';
+                }else{
+                    
+                    // Create borrow record finally hehehehe
+                    $stmt = $pdo->prepare("
+                        INSERT INTO borrow(
+                            student_id,
+                            book_id
+                        )
+                        VALUES(?,?)
+                    ");
+
+                    $stmt->execute([
+                        $studentId,
+                        $bookId
+                    ]);
+
+                    $_SESSION['alert'] = 'Book borrowed successfully';
+                }
+            }
+            header("Location: index.php?section=borrow");
+            exit;
+        }
+    }
 ?>
 
 <!DOCTYPE html>
