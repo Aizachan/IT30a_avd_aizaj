@@ -101,7 +101,7 @@ if($section==='students' && $action==='update'){
         $course = trim($_POST['student_course'] ?? '');
         if($firstName !== '' && $lastName !='' && $course !==''){
 
-        $sql =("
+        $sql=("
             UPDATE students
             SET
                 student_first_name=?,
@@ -366,11 +366,26 @@ if($section === 'borrow'){
     ");
 
     $borrows = $stmt->fetchAll();
+}
+// Borrow abook
+if($section=='borrow' && $action=='return'){
 
+    $borrowId = (int) ($_GET['id'] ?? 0);
+
+    $stmt = $pdo->prepare("
+        UPDATE borrow
+        SET borrow_return_date = CURRENT_TIMESTAMP
+        WHERE borrow_id=?
+    ");
+
+    $stmt->execute([$borrowId]);
+
+    $_SESSION['alert'] = 'Book Returned successfully.';
+
+    header("Location: index.php?section=borrow");
+    exit;
 
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -747,6 +762,8 @@ if($section === 'borrow'){
                     <th>Book Author</th>
                     <th>Created At</th>
                     <th>Returned At</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
 
@@ -789,7 +806,29 @@ if($section === 'borrow'){
                             <?php endif; ?>
                         </td>
 
-                    </tr>
+                              
+
+                                
+                                            
+                                       <td>
+            <?php if ($borrow['borrow_return_date']): ?>
+                Returned
+            <?php else: ?>
+                Borrowed
+            <?php endif; ?>
+        </td>
+
+        <td>
+            <?php if (!$borrow['borrow_return_date']): ?>
+                <a
+                    href="index.php?section=borrow&action=return&id=<?= $borrow['borrow_id'] ?>"
+                    onclick="return confirm('Mark this book as returned?');"
+                >
+                    Return
+                </a>
+            <?php endif; ?>
+        </td>
+    </tr>
 
                 <?php endforeach; ?>
 
