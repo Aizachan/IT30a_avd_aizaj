@@ -23,6 +23,7 @@ try{
 // Session
 session_start();
 
+
 // Determine current section
 $section = $_GET['section'] ?? 'students';
 
@@ -232,7 +233,7 @@ if($section==='books' && $action==='update'){
 // Borrow
 //----------------------------------------------------------
 
-// Fetch Borrow Records
+// Fetch Borrow Records for table
 
 if($section === 'borrow'){
     // Fetch Students for borrow form
@@ -411,6 +412,8 @@ if($section=='borrow' && $action=='return'){
         </a>
         </p>
 
+
+        
         <?php if($action==='create'): ?>
             <h2>Add student</h2>
 
