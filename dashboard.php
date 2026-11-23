@@ -274,25 +274,32 @@
 <body>
     <?php include 'includes/navbar.php';
     
-    class="token variable">$host = 'localhost';
-class="token variable">$db   = 'it30_lab_db';
-class="token variable">$user = 'root';
-class="token variable">$pass = '';
-class="token variable">$charset = 'utf8mb4';
+$host = 'localhost';
+$db   = 'it30a_lab_db';
+$user = 'root';
+$pass = '';
+$charset = 'utf8mb4';
 
-class="token variable">$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 
-class="token variable">$options = [
+$options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
 ];
 
 try {
-    class="token variable">$pdo = new PDO(class="token variable">$dsn, class="token variable">$user, class="token variable">$pass, class="token variable">$options);
-} catch (PDOException class="token variable">$e) {
-    die("Database connection failed: " . class="token variable">$e->getMessage());
+    $pdo = new PDO($dsn,$user,$pass,$options);
+} catch (PDOException $e) {
+    die("Database connection failed: " .$e->getMessage());
 }
+
+// ---------- 1. KPI COUNTS ----------
+
+$studentCount  = $pdo->query("SELECT COUNT(*) FROM students")->fetchColumn();
+$bookCount     = $pdo->query("SELECT COUNT(*) FROM books")->fetchColumn();
+$totalBorrows  = $pdo->query("SELECT COUNT(*) FROM borrow")->fetchColumn();
+$activeBorrows = $pdo->query("SELECT COUNT(*) FROM borrow WHERE borrow_return_date IS NULL")->fetchColumn();
     
     ?>
 </body>
