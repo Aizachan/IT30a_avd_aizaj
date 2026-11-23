@@ -272,6 +272,28 @@
     </style>
 </head>
 <body>
-    <?php include 'includes/navbar.php'; ?>
+    <?php include 'includes/navbar.php';
+    
+    class="token variable">$host = 'localhost';
+class="token variable">$db   = 'it30_lab_db';
+class="token variable">$user = 'root';
+class="token variable">$pass = '';
+class="token variable">$charset = 'utf8mb4';
+
+class="token variable">$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+
+class="token variable">$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+    class="token variable">$pdo = new PDO(class="token variable">$dsn, class="token variable">$user, class="token variable">$pass, class="token variable">$options);
+} catch (PDOException class="token variable">$e) {
+    die("Database connection failed: " . class="token variable">$e->getMessage());
+}
+    
+    ?>
 </body>
 </html>
