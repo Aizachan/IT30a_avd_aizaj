@@ -1,13 +1,68 @@
-<?php 
+<?php
+
+// ---------- 1. CURRENT SECTION ----------
+
 $currentSection = $_GET['section'] ?? 'dashboard';
 
-function navActive($section,$currentSection){
+function navActive($section, $currentSection) {
     return $section === $currentSection ? 'active' : '';
 }
 
+
+// ---------- 2. DATABASE CONNECTION ----------
+
+$host = 'localhost';
+$db   = 'it30a_lab_db';
+$user = 'root';
+$pass = '';
+$charset = 'utf8mb4';
+
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+
+$options = [
+    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_EMULATE_PREPARES   => false,
+];
+
+try {
+    $pdo = new PDO($dsn, $user, $pass, $options);
+} catch (PDOException $e) {
+    die("Database connection failed: " . $e->getMessage());
+}
+
+
+// ---------- 3. DEFINE DASHBOARD KPI VARIABLES ----------
+
+// Total Students
+$studentCount = $pdo->query("
+    SELECT COUNT(*) FROM students
+")->fetchColumn();
+
+// Total Books
+$bookCount = $pdo->query("
+    SELECT COUNT(*) FROM books
+")->fetchColumn();
+
+// Total Borrow Records
+$totalBorrows = $pdo->query("
+    SELECT COUNT(*) FROM borrow
+")->fetchColumn();
+
+// Active Borrowed Books
+$activeBorrows = $pdo->query("
+    SELECT COUNT(*)
+    FROM borrow
+    WHERE borrow_return_date IS NULL
+")->fetchColumn();
+
 ?>
 
+<!-- ---------- 4. DASHBOARD STATISTICS ---------- -->
+
 <div class="stats-grid">
+
+    <!-- Students -->
     <div class="stat-card">
         <div class="stat-header">
             <span class="stat-label">Students</span>
@@ -17,6 +72,7 @@ function navActive($section,$currentSection){
         <div class="stat-sub">enrolled</div>
     </div>
 
+    <!-- Books -->
     <div class="stat-card">
         <div class="stat-header">
             <span class="stat-label">Books</span>
@@ -26,6 +82,7 @@ function navActive($section,$currentSection){
         <div class="stat-sub">in collection</div>
     </div>
 
+    <!-- Borrow Records -->
     <div class="stat-card">
         <div class="stat-header">
             <span class="stat-label">Borrow records</span>
@@ -35,6 +92,7 @@ function navActive($section,$currentSection){
         <div class="stat-sub">all time</div>
     </div>
 
+    <!-- Active Loans -->
     <div class="stat-card">
         <div class="stat-header">
             <span class="stat-label">Active loans</span>
@@ -43,6 +101,7 @@ function navActive($section,$currentSection){
         <div class="stat-number"><?= $activeBorrows ?></div>
         <div class="stat-sub">not returned</div>
     </div>
+
 </div>
 
 
